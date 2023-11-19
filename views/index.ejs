@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Good Chatbot</title>
+	</head>
+	<body>
+		Good Chatbot: <input id="input" />
+		<button id="submit">Submit</button>
+		<ul id="chat" type="none">
+		</ul>
+	</body>
+	<script src="https://cdn.socket.io/4.6.0/socket.io.min.js" integrity="sha384-c79GN5VsunZvi+Q/WObgk2in0CbZsHnjEqvFxC5DxHn9lTfNce2WW6h2pH6u/kF+" crossorigin="anonymous"></script>
+	<script>
+		const input = document.getElementById("input");
+		const button = document.getElementById("submit");
+		const chat = document.getElementById('chat')
+		button.addEventListener('click', sendMessage);
+
+		const socket = io();
+
+		function sendMessage() {
+			socket.emit("message", {user: 'client' ,message: input.value});
+
+			const li = document.createElement('li');
+			li.textContent = `client: ${input.value}`;
+			chat.appendChild(li);
+		}
+
+		socket.on("reply", (response) => {
+			const li = document.createElement('li');
+			li.textContent = `server: ${response.message}`;
+			chat.appendChild(li);
+		})
+	</script>
+</html>

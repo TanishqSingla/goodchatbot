@@ -15,4 +15,14 @@ if(process.env.NODE_ENV === 'production') {
 const server = http.createServer(app);
 const io = new Server(server);
 
+io.on('connection', (socket) => {
+	console.log("socket connection established");
+
+	socket.on("message", (data) => {
+		const { message } = data;
+
+		socket.emit("reply", {message: "hello world"});
+	});
+});
+
 server.listen(process.env.PORT, () => console.log(`server is listening on port ${process.env.PORT}`));
