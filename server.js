@@ -1,10 +1,18 @@
 import dotenv from 'dotenv';
 import app from './app.js';
+import mongoose from 'mongoose';
+import http from 'http';
+import { Server } from 'socket.io';
 
 if(process.env.NODE_ENV === 'production') {
 	dotenv.config();
+	mongoose.connect(process.env.MONGODB_URL);
 } else {
 	dotenv.config({path: `.env.${process.env.NODE_ENV}`});
+	mongoose.connect("mongodb://127.0.0.1:27017/goodchatbot").then(() => console.log("connected to db"))
 }
 
-app.listen(process.env.PORT, () => console.log(`server listening on port ${process.env.PORT}`));
+const server = http.createServer(app);
+const io = new Server(server);
+
+server.listen(process.env.PORT, () => console.log(`server is listening on port ${process.env.PORT}`));
