@@ -3,6 +3,8 @@ import app from './app.js';
 import mongoose from 'mongoose';
 import http from 'http';
 import { Server } from 'socket.io';
+import { Chat } from './models/Chat.js';
+import { aiResponse } from './service/gpt.js';
 
 if(process.env.NODE_ENV === 'production') {
 	dotenv.config();
@@ -18,10 +20,25 @@ const io = new Server(server);
 io.on('connection', (socket) => {
 	console.log("socket connection established");
 
-	socket.on("message", (data) => {
-		const { message } = data;
+	socket.on("message", async (data) => {
+		try {
+			const { user, message } = data;
+			const chat = new Chat({user, message});
 
-		socket.emit("reply", {message: "hello world"});
+			const reply = await aiResponse(message);
+			socket.emit("reply", {message: reply.message});
+
+			if(reply.success) {
+				chat.reply = reply.message;
+				chat.save();
+			}
+		} catch (err) {
+			console.log(err);
+		}
+	});
+
+	socket.on('disconnect', () => {
+		console.log('user disconnected');
 	});
 });
 

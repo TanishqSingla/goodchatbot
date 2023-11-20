@@ -19,17 +19,19 @@
 		const socket = io();
 
 		function sendMessage() {
-			socket.emit("message", {user: 'client' ,message: input.value});
+			socket.emit("message", {user: 'client', message: input.value});
 
 			const li = document.createElement('li');
 			li.textContent = `client: ${input.value}`;
 			chat.appendChild(li);
+			button.disabled = true;
 		}
 
 		socket.on("reply", (response) => {
 			const li = document.createElement('li');
 			li.textContent = `server: ${response.message}`;
 			chat.appendChild(li);
-		})
+			button.disabled = false;
+		});
 	</script>
 </html>
