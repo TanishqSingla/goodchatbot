@@ -8,11 +8,11 @@ import { aiResponse } from './service/gpt.js';
 
 if(process.env.NODE_ENV === 'production') {
 	dotenv.config();
-	mongoose.connect(process.env.MONGODB_URL);
 } else {
 	dotenv.config({path: `.env.${process.env.NODE_ENV}`});
-	mongoose.connect("mongodb://127.0.0.1:27017/goodchatbot").then(() => console.log("connected to db"))
 }
+
+mongoose.connect(process.env.MONGODB_URL).then(() => console.log("connected to db")).catch(e => console.log(e));
 
 const server = http.createServer(app);
 const io = new Server(server);
